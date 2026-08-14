@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sonic Web Platformer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-wrapper">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Title Screen Overlay -->
+        <div id="title-screen" class="ui-screen active">
+            <div class="title-logo">
+                <div class="logo-text-top">SUPER</div>
+                <div class="logo-text-main">SONIC</div>
+                <div class="logo-text-sub">WEB RUNNER</div>
+            </div>
+            <div class="menu-container">
+                <button id="btn-start" class="btn-retro">START GAME</button>
+                <button id="btn-options" class="btn-retro">OPTIONS</button>
+            </div>
+            <div id="last-score-display" class="last-score-box hidden">
+                <span class="label">LAST SCORE:</span> <span id="last-score-val">0</span>
+            </div>
+            <div class="controls-hint">
+                <p><strong>Keyboard:</strong> [A/D] / [←/→] Move | [S] / [↓] Roll/Crouch | [Space/K] Jump / Spindash</p>
+                <p><strong>Gamepad & Touch:</strong> Supported!</p>
+            </div>
+        </div>
+
+        <!-- Options Screen Overlay -->
+        <div id="options-screen" class="ui-screen hidden">
+            <h2>OPTIONS</h2>
+            <div class="options-group">
+                <div class="option-item">
+                    <label>Screen Mode:</label>
+                    <button id="btn-fullscreen-toggle" class="btn-retro small">Fullscreen</button>
+                </div>
+                <div class="option-item">
+                    <label for="music-volume">Music Volume:</label>
+                    <input type="range" id="music-volume" min="0" max="100" value="70">
+                    <button id="btn-music-mute" class="btn-retro icon-btn">🔊</button>
+                </div>
+                <div class="option-item">
+                    <label for="sfx-volume">SFX Volume:</label>
+                    <input type="range" id="sfx-volume" min="0" max="100" value="80">
+                    <button id="btn-sfx-mute" class="btn-retro icon-btn">🔊</button>
+                </div>
+                <div class="option-item">
+                    <label>Mute All:</label>
+                    <button id="btn-mute-all" class="btn-retro small">MUTE: OFF</button>
+                </div>
+            </div>
+            <button id="btn-options-back" class="btn-retro">BACK TO MENU</button>
+        </div>
+
+        <!-- Gameplay HUD -->
+        <div id="hud-overlay" class="ui-overlay hidden">
+            <div class="hud-top">
+                <div class="hud-stat"><span class="hud-label">SCORE</span> <span id="hud-score">0</span></div>
+                <div class="hud-stat"><span class="hud-label">TIME</span> <span id="hud-time">0:00</span></div>
+                <div class="hud-stat" id="hud-rings-box"><span class="hud-label">RINGS</span> <span id="hud-rings">0</span></div>
+                <div class="hud-stat"><span class="hud-label">LIVES</span> <span id="hud-lives">3</span></div>
+            </div>
+            <div class="hud-zone">EMERALD HILL ZONE</div>
+        </div>
+
+        <!-- Stage Clear Overlay -->
+        <div id="stage-clear-screen" class="ui-screen hidden">
+            <h1 class="clear-title">STAGE CLEAR!</h1>
+            <div class="score-summary">
+                <div class="score-row"><span>TIME BONUS:</span> <span id="clear-time-bonus">0</span></div>
+                <div class="score-row"><span>RING BONUS:</span> <span id="clear-ring-bonus">0</span></div>
+                <div class="score-row total"><span>TOTAL SCORE:</span> <span id="clear-total-score">0</span></div>
+            </div>
+            <p class="auto-return-note">Returning to title menu in <span id="clear-countdown">5</span>s...</p>
+            <button id="btn-clear-continue" class="btn-retro">TITLE MENU</button>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div id="game-over-screen" class="ui-screen hidden">
+            <h1 class="game-over-title">GAME OVER</h1>
+            <div class="score-summary">
+                <div class="score-row total"><span>FINAL SCORE:</span> <span id="over-final-score">0</span></div>
+            </div>
+            <button id="btn-over-retry" class="btn-retro">TRY AGAIN</button>
+            <button id="btn-over-title" class="btn-retro secondary">TITLE MENU</button>
+        </div>
+
+        <!-- Virtual Touch Controls for Mobile/Tablet -->
+        <div id="touch-controls" class="touch-overlay hidden">
+            <div id="dpad-zone" class="dpad">
+                <button id="touch-left" class="touch-btn dpad-btn left">◄</button>
+                <button id="touch-right" class="touch-btn dpad-btn right">►</button>
+                <button id="touch-down" class="touch-btn dpad-btn down">▼</button>
+            </div>
+            <div class="action-buttons">
+                <button id="touch-jump" class="touch-btn action-btn jump">JUMP</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

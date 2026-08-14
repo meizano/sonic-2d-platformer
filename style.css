@@ -1,0 +1,437 @@
+/* Reset & Core Setup */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: #0b0c10;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+/* Game Outer Wrapper - Handles Auto Aspect Ratio Scaling (4:3, 16:10, 3:2, 16:9, 19.5:9, 21:9) */
+#game-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    box-shadow: 0 0 30px rgba(0, 162, 255, 0.3);
+    overflow: hidden;
+}
+
+/* Canvas Element */
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #202020;
+}
+
+/* Base UI Overlay & Screens */
+.ui-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 15, 30, 0.88);
+    backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transition: opacity 0.25s ease-in-out;
+    padding: 20px;
+    text-align: center;
+}
+
+.ui-screen.hidden {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.ui-overlay.hidden {
+    display: none !important;
+}
+
+/* Title Screen Styling */
+.title-logo {
+    margin-bottom: 25px;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+}
+
+.logo-text-top {
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    font-weight: 900;
+    color: #ffcc00;
+    letter-spacing: 6px;
+}
+
+.logo-text-main {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    font-style: italic;
+    color: #0088ff;
+    letter-spacing: 4px;
+    text-shadow: 4px 4px 0px #fff, -3px -3px 0px #002b80, 0 0 20px rgba(0, 136, 255, 0.8);
+}
+
+.logo-text-sub {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 800;
+    color: #ff3333;
+    letter-spacing: 5px;
+}
+
+/* Buttons */
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 280px;
+}
+
+.btn-retro {
+    background: linear-gradient(180deg, #ffcc00 0%, #ff8800 100%);
+    border: 3px solid #ffffff;
+    border-radius: 8px;
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: 900;
+    padding: 12px 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 0 #b36200, 0 6px 10px rgba(0,0,0,0.5);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.15s ease;
+    letter-spacing: 1px;
+}
+
+.btn-retro:hover {
+    filter: brightness(1.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #b36200, 0 8px 15px rgba(0,0,0,0.6);
+}
+
+.btn-retro:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #b36200, 0 3px 5px rgba(0,0,0,0.5);
+}
+
+.btn-retro.secondary {
+    background: linear-gradient(180deg, #445577 0%, #223355 100%);
+    color: #fff;
+    box-shadow: 0 4px 0 #111a2e;
+}
+
+.btn-retro.small {
+    padding: 6px 14px;
+    font-size: 0.9rem;
+}
+
+.btn-retro.icon-btn {
+    padding: 6px 12px;
+    font-size: 1.1rem;
+}
+
+/* Last Score Display */
+.last-score-box {
+    margin-top: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #ffcc00;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #ffcc00;
+}
+
+.controls-hint {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: #aaaaaa;
+    line-height: 1.5;
+}
+
+/* Options Screen */
+#options-screen h2 {
+    font-size: 2.2rem;
+    color: #ffcc00;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.options-group {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 25px;
+}
+
+.option-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.option-item label {
+    flex: 1;
+    text-align: left;
+}
+
+.option-item input[type="range"] {
+    flex: 1;
+    accent-color: #ffcc00;
+    cursor: pointer;
+}
+
+/* HUD Overlay */
+.hud-top {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    display: flex;
+    gap: 25px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    font-family: monospace, monospace;
+}
+
+.hud-stat {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.hud-label {
+    color: #ffcc00;
+}
+
+.hud-zone {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 900;
+    font-size: 1rem;
+    color: #ffffff;
+    text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    font-family: monospace, monospace;
+    letter-spacing: 2px;
+}
+
+@media (max-width: 600px) {
+    .hud-zone { top: 10px; font-size: 0.8rem; }
+}
+
+#hud-rings-box.flash {
+    animation: flash-red 0.4s infinite alternate;
+}
+
+@keyframes flash-red {
+    from { color: #ffffff; }
+    to { color: #ff3333; }
+}
+
+/* Stage Clear & Game Over */
+.clear-title {
+    font-size: 3.5rem;
+    color: #00ff88;
+    margin-bottom: 20px;
+    text-shadow: 4px 4px 0 #005522;
+}
+
+.game-over-title {
+    font-size: 3.8rem;
+    color: #ff3333;
+    margin-bottom: 20px;
+    text-shadow: 4px 4px 0 #880000;
+}
+
+.score-summary {
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #ffffff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    width: 100%;
+    max-width: 380px;
+}
+
+.score-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 8px 0;
+    color: #dddddd;
+}
+
+.score-row.total {
+    font-size: 1.4rem;
+    border-top: 2px dashed #ffcc00;
+    padding-top: 10px;
+    margin-top: 12px;
+    color: #ffcc00;
+}
+
+.auto-return-note {
+    font-size: 0.9rem;
+    color: #aaaaaa;
+    margin-bottom: 15px;
+}
+
+/* Touch Controls */
+.touch-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.touch-overlay.hidden {
+    display: none !important;
+}
+
+.dpad {
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+    width: 150px;
+    height: 110px;
+    pointer-events: auto;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.dpad-btn {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 1.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    backdrop-filter: blur(4px);
+}
+
+.dpad-btn:active, .dpad-btn.active {
+    background: rgba(255, 204, 0, 0.6);
+    border-color: #ffcc00;
+    transform: scale(0.95);
+}
+
+.action-buttons {
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+    pointer-events: auto;
+}
+
+.action-btn.jump {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: rgba(0, 136, 255, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+}
+
+.action-btn.jump:active, .action-btn.jump.active {
+    background: rgba(0, 204, 255, 0.8);
+    border-color: #ffffff;
+    transform: scale(0.92);
+}
+
+/* Mobile Responsiveness Tweaks */
+@media (max-width: 600px) {
+    .hud-top {
+        top: 10px;
+        left: 10px;
+        gap: 12px;
+        font-size: 0.95rem;
+    }
+    
+    .dpad {
+        bottom: 15px;
+        left: 15px;
+        gap: 6px;
+    }
+
+    .dpad-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+
+    .action-buttons {
+        bottom: 15px;
+        right: 15px;
+    }
+
+    .action-btn.jump {
+        width: 64px;
+        height: 64px;
+        font-size: 0.95rem;
+    }
+}
