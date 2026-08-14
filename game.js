@@ -412,6 +412,20 @@
         return { exists: false };
     }
 
+    /* Ground probe: center sensor first, then leading foot sensor (based on facing),
+       so the player stays grounded (and can jump) while near a ledge edge. */
+    function probeGround(p, vy) {
+        const cx = p.x + p.w / 2;
+        let g = groundAt(cx, 0, false);
+        if (!g.exists && vy >= 0) g = platformGround(cx, p.y + p.h);
+        if (!g.exists) {
+            const edgeX = p.facing >= 0 ? p.x + p.w : p.x;
+            g = groundAt(edgeX, 0, false);
+            if (!g.exists && vy >= 0) g = platformGround(edgeX, p.y + p.h);
+        }
+        return g;
+    }
+
     function initLevel() {
         springs = springDefs.map(s => {
             const y = s.y > 0 ? s.y : groundHeightAt(s.x) - 16;
@@ -538,8 +552,7 @@
 
         /* --- GROUND STATE --- */
         if (p.isGrounded) {
-            let g = groundAt(p.x + p.w / 2, p.spd);
-            if (!g.exists && p.vy >= 0) g = platformGround(p.x + p.w / 2, p.y + p.h);
+            let g = probeGround(p, p.vy);
             if (!g.exists) {
                 /* walked off ledge */
                 p.isGrounded = false;
@@ -626,26 +639,28 @@
                     }
                 }
 
-                /* integrate along ground */
-                p.vx = p.spd * Math.cos(g.angle);
-                p.vy = p.spd * Math.sin(g.angle);
-                p.x += p.vx;
+                /* integrate along ground (skipped on the jump frame so the
+                   jump's vy is not overwritten by slope velocity) */
+                if (p.isGrounded) {
+                    p.vx = p.spd * Math.cos(g.angle);
+                    p.vy = p.spd * Math.sin(g.angle);
+                    p.x += p.vx;
 
-                let g2 = groundAt(p.x + p.w / 2, p.spd);
-                if (!g2.exists) g2 = platformGround(p.x + p.w / 2, p.y + p.h);
-                if (g2.exists) {
-                    p.y = g2.y - p.h;
-                } else {
-                    p.isGrounded = false;
-                    p.vx = p.spd * Math.cos(p.groundAngle);
-                    p.vy = p.spd * Math.sin(p.groundAngle);
-                }
+                    let g2 = probeGround(p, p.vy);
+                    if (g2.exists) {
+                        p.y = g2.y - p.h;
+                    } else {
+                        p.isGrounded = false;
+                        p.vx = p.spd * Math.cos(p.groundAngle);
+                        p.vy = p.spd * Math.sin(p.groundAngle);
+                    }
 
-                /* loop: fall off when too slow near/over the top */
-                if (p.isGrounded && g2 && g2.loop && Math.abs(p.spd) < PHYS.loopMin) {
-                    p.isGrounded = false;
-                    p.vx = p.spd * Math.cos(p.groundAngle);
-                    p.vy = p.spd * Math.sin(p.groundAngle) + 0.5;
+                    /* loop: fall off when too slow near/over the top */
+                    if (p.isGrounded && g2 && g2.loop && Math.abs(p.spd) < PHYS.loopMin) {
+                        p.isGrounded = false;
+                        p.vx = p.spd * Math.cos(p.groundAngle);
+                        p.vy = p.spd * Math.sin(p.groundAngle) + 0.5;
+                    }
                 }
             }
         }
@@ -670,10 +685,20 @@
             const prevBottom = p.y + p.h;
             p.x += p.vx;
             p.y += p.vy;
-            if (p.vy >= 0 && p.vy < 6 && !p.isSpindashing) {
-                const g = groundAt(p.x + p.w / 2, p.spd);
+            if (p.vy >= 0 && !p.isSpindashing) {
+                const g = probeGround(p, p.vy);
                 if (g.exists && prevBottom <= g.y + 2 && p.y + p.h >= g.y) {
-                    /* land */
+                    /* land (any fall speed) */
+                    p.spd = p.vx * Math.cos(g.angle) + p.vy * Math.sin(g.angle);
+                    p.groundAngle = g.angle;
+                    p.y = g.y - p.h;
+                    p.vx = p.spd * Math.cos(g.angle);
+                    p.vy = p.spd * Math.sin(g.angle);
+                    p.isGrounded = true;
+                    p.isJumping = false;
+                    if (Math.abs(p.spd) < 0.3) p.isRolling = false;
+                } else if (g.exists && prevBottom <= g.y + 16 && p.y + p.h >= g.y) {
+                    /* fast-fall safety: landed below ground line this frame, snap up */
                     p.spd = p.vx * Math.cos(g.angle) + p.vy * Math.sin(g.angle);
                     p.groundAngle = g.angle;
                     p.y = g.y - p.h;
